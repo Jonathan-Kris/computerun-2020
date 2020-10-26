@@ -31,7 +31,7 @@ class PostController extends Controller{
         'Event.required'=> 'Event cannot be empty',
         'Confirm.required' => 'Please check the box to confirm'
         ]);
-      
+
         // print_r($message->input());
     }
 

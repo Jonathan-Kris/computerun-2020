@@ -184,6 +184,6 @@ class TicketStatusController extends Controller
         Session::forget('name');
         Session::forget('nim');
         Session::forget('ticket_number');
-        return redirect('/login');
+        return redirect('/');
     }
 }

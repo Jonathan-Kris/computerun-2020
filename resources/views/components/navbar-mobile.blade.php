@@ -1,9 +1,10 @@
 @if (preg_match('/Mac OS/', app('request')->header('User-Agent')) == 1)
-<nav class="navbar-mobile allow-blur">
+<nav class="navbar-mobile allow-blur {{$is_bootstrap ?? ''}}">
 @else
-<nav class="navbar-mobile">
+<nav class="navbar-mobile {{$is_bootstrap ?? ''}}">
 @endif
-    @if (isset($template) && $template == "event-details")
+    @if (isset($template))
+    {{-- For "Event Details" template --}}
         @if (parse_url(app('request')->headers->get('referer'), PHP_URL_HOST) == parse_url(app('request')->url(), PHP_URL_HOST))
             <div class="action-global">
                 <a class="navbar-link" onClick="window.history.back()">
@@ -15,39 +16,117 @@
         @else
             <div class="action-global">
                 <a href="/" class="navbar-link">
-                    @component ('components.bootstrap-icons', ['icon' => 'house-door', 'size' => 32])
+                    @component ('components.computerun-icon', ['size' => 32])
                     @endcomponent
                     <br>Home
                 </a>
             </div>
         @endif
-        <div>
-        </div>
-        <div>
-            @if (isset($event['register']))
-                <div class="action-primary">
-                    <a href="{{$event['register']}}" class="navbar-link">
-                        @component ('components.bootstrap-icons', ['icon' => 'person-plus-fill', 'size' => 36, 'optical' => 'right'])
-                        @endcomponent
-                        Register
+        @switch ($template)
+            @case ("admin-event-details")
+                <div>
+                    @if (Auth::user()->university_id == 2)
+                        <a href="#eventsettings" class="navbar-link">
+                            @component ('components.bootstrap-icons', ['icon' => 'gear-wide-connected', 'size' => 32])
+                            @endcomponent
+                            <br>Settings
+                        </a>
+                    @endif
+                </div>
+                <div>
+                    <a href="#participants" class="navbar-link">
+                        <div class="action-primary">
+                            @component ('components.bootstrap-icons', ['icon' => 'person-fill', 'size' => 36])
+                            @endcomponent
+                            Participants
+                        </div>
                     </a>
                 </div>
-            @endif
-        </div>
-        <div>
-            <a href="#rules" class="navbar-link">
-                @component ('components.bootstrap-icons', ['icon' => 'patch-exclamation', 'size' => 32])
-                @endcomponent
-                <br>Rules
-            </a>
-        </div>
-        <div>
-            <a href="#contact" class="navbar-link">
-                @component ('components.bootstrap-icons', ['icon' => 'chat-left-quote', 'size' => 32, 'optical' => 'right'])
-                @endcomponent
-                <br>Contact
-            </a>
-        </div>
+                <div>
+                    <a href="#teams" class="navbar-link">
+                        @component ('components.bootstrap-icons', ['icon' => 'people-fill', 'size' => 32])
+                        @endcomponent
+                        <br>Teams
+                    </a>
+                </div>
+                <div>
+                    <a href="#committees" class="navbar-link">
+                        @component ('components.bootstrap-icons', ['icon' => 'person-badge', 'size' => 32])
+                        @endcomponent
+                        <br>Committees
+                    </a>
+                </div>
+                @break
+            @case ("event-details")
+                <div>
+                </div>
+                <div>
+                    @if (isset($event['register']))
+                        <a href="{{$event['register']}}" class="navbar-link">
+                            <div class="action-primary">
+                                @component ('components.bootstrap-icons', ['icon' => 'person-plus-fill', 'size' => 36, 'optical' => 'right'])
+                                @endcomponent
+                                Register
+                            </div>
+                        </a>
+                    @endif
+                </div>
+                <div>
+                    <a href="#rules" class="navbar-link">
+                        @component ('components.bootstrap-icons', ['icon' => 'patch-exclamation', 'size' => 32])
+                        @endcomponent
+                        <br>Rules
+                    </a>
+                </div>
+                <div>
+                    <a href="#contact" class="navbar-link">
+                        @component ('components.bootstrap-icons', ['icon' => 'chat-left-quote', 'size' => 32])
+                        @endcomponent
+                        <br>Contact
+                    </a>
+                </div>
+                @break
+            @case ("sponsor-us")
+                <div>
+                </div>
+                <div>
+                    <a href="/docs/COMPUTERUN Sponsorship Proposal.pdf" target="_blank" class="navbar-link">
+                        <div class="action-primary">
+                            @component ('components.bootstrap-icons', ['icon' => 'cloud-download-fill', 'size' => 36])
+                            @endcomponent
+                            Download
+                        </div>
+                    </a>
+                </div>
+                <div>
+                    <a href="#pricing" class="navbar-link">
+                        @component ('components.bootstrap-icons', ['icon' => 'gift', 'size' => 32])
+                        @endcomponent
+                        <br>Paket
+                    </a>
+                </div>
+                <div>
+                    <a href="#contact" class="navbar-link">
+                        @component ('components.bootstrap-icons', ['icon' => 'patch-exclamation', 'size' => 32])
+                        @endcomponent
+                        <br>Kontak
+                    </a>
+                </div>
+                @break
+            @case ("login-page")
+                <div></div>
+                <div></div>
+                <div></div>
+                <div>
+                    <a onclick="location.reload()" class="navbar-link">
+                        @component ('components.bootstrap-icons', ['icon' => 'arrow-clockwise', 'size' => 32])
+                        @endcomponent
+                        <br>Refresh
+                    </a>
+                </div>
+                @break
+        @endswitch
+    {{-- For others --}}
     @else
         <div>
             @if (app('request')->path() == '/')
@@ -65,14 +144,14 @@
             @endif
         </div>
         <div>
-            @if (app('request')->path() == 'events')
+            @if (app('request')->path() == '/#events')
                 <a class="navbar-link selected">
                     @component ('components.bootstrap-icons', ['icon' => 'calendar-date-fill', 'size' => 32])
                     @endcomponent
                     <br>Events
                 </a>
             @else
-                <a href="/events" class="navbar-link">
+                <a href="/#events" class="navbar-link">
                     @component ('components.bootstrap-icons', ['icon' => 'calendar-date', 'size' => 32])
                     @endcomponent
                     <br>Events
@@ -80,7 +159,11 @@
             @endif
         </div>
         <div>
-            <a href="/regist" class="navbar-link">
+            @if (Auth::check() && app('request')->path() == 'home')
+            <a class="navbar-link" data-toggle="modal" href="#" data-target="#register" role="button">
+            @else
+            <a href="/register/0" class="navbar-link">
+            @endif
                 <div class="action-primary">
                     @component ('components.bootstrap-icons', ['icon' => 'person-plus-fill', 'size' => 36, 'optical' => 'right'])
                     @endcomponent
@@ -104,11 +187,27 @@
             @endif
         </div>
         <div>
-            <a href="/login" class="navbar-link">
-                @component ('components.bootstrap-icons', ['icon' => 'box-arrow-in-right', 'size' => 32, 'optical' => 'right'])
-                @endcomponent
-                <br>Login
-            </a>
+            @guest
+                <a href="/home" class="navbar-link">
+                    @component ('components.bootstrap-icons', ['icon' => 'box-arrow-in-right', 'size' => 32, 'optical' => 'left'])
+                    @endcomponent
+                    <br>Login
+                </a>
+            @else
+                @if (app('request')->path() == 'home')
+                    <a class="navbar-link selected">
+                        @component ('components.bootstrap-icons', ['icon' => 'person-badge-fill', 'size' => 32])
+                        @endcomponent
+                        <br>Profile
+                    </a>
+                @else
+                    <a href="/login" class="navbar-link">
+                        @component ('components.bootstrap-icons', ['icon' => 'person-badge', 'size' => 32])
+                        @endcomponent
+                        <br>Profile
+                    </a>
+                @endif
+            @endguest
         </div>
     @endif
 </nav>
